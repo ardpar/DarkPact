@@ -2,7 +2,7 @@
 
 > **Status**: Approved
 > **Created**: 2026-04-03
-> **Last Updated**: 2026-04-03
+> **Last Updated**: 2026-04-04
 > **Source Concept**: design/gdd/GDD_DarkPact.md
 
 ---
@@ -30,13 +30,13 @@ Dark Pact is a top-down hack-and-slash roguelite driven by the Dark Pact mechani
 | 11 | Status Effect System | Gameplay | MVP | Designed | design/gdd/status-effect-system.md | Health & Damage, Combat System |
 | 12 | Enemy System | Gameplay | MVP | Designed | design/gdd/enemy-system.md | Health & Damage, Room/Tilemap, Combat System |
 | 13 | Enemy AI | Gameplay | MVP | Designed | design/gdd/enemy-ai.md | Enemy System, Player Controller |
-| 14 | Pact System | Gameplay | MVP | Not Started | — | Run Manager, Health & Damage, Status Effect System |
-| 15 | Equipment System | Economy | MVP | Not Started | — | Item Database, Combat System |
-| 16 | Loot System | Economy | MVP | Not Started | — | Item Database, Enemy System, Equipment System |
-| 17 | Procedural Dungeon Generator | Gameplay | MVP | Not Started | — | Room/Tilemap, Enemy System |
-| 18 | Boss System | Gameplay | MVP | Not Started | — | Enemy System, Enemy AI, Combat System, Procedural Dungeon Generator |
-| 19 | HUD | UI | MVP | Not Started | — | Health & Damage, Combat System, Pact System, Skill Tree |
-| 20 | Pact Selection UI | UI | MVP | Not Started | — | Pact System, Run Manager |
+| 14 | Pact System | Gameplay | MVP | Designed | design/gdd/pact-system.md | Run Manager, Health & Damage, Status Effect System |
+| 15 | Equipment System | Economy | MVP | Designed | design/gdd/equipment-system.md | Item Database, Combat System |
+| 16 | Loot System | Economy | MVP | Designed | design/gdd/loot-system.md | Item Database, Enemy System, Equipment System |
+| 17 | Procedural Dungeon Generator | Gameplay | MVP | Designed | design/gdd/procedural-dungeon-generator.md | Room/Tilemap, Enemy System |
+| 18 | Boss System | Gameplay | MVP | Designed | design/gdd/boss-system.md | Enemy System, Enemy AI, Combat System, Procedural Dungeon Generator |
+| 19 | HUD | UI | MVP | Designed | design/gdd/hud.md | Health & Damage, Combat System, Pact System, Skill Tree |
+| 20 | Pact Selection UI | UI | MVP | Designed | design/gdd/pact-selection-ui.md | Pact System, Run Manager |
 | 21 | Synergy Calculator | Gameplay | Vertical Slice | Not Started | — | Pact System |
 | 22 | Level-Up System | Progression | Vertical Slice | Not Started | — | Combat System |
 | 23 | Skill Tree | Progression | Vertical Slice | Not Started | — | Level-Up System, Pact System |
@@ -184,10 +184,10 @@ Dark Pact is a top-down hack-and-slash roguelite driven by the Dark Pact mechani
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 30 |
-| Design docs started | 13 |
+| Design docs started | 20 |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
-| MVP systems designed | 13/20 |
+| MVP systems designed | 20/20 |
 | Vertical Slice systems designed | 0/6 |
 
 ---
