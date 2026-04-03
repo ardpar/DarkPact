@@ -11,15 +11,15 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Wall
+  - PlayerHitbox
+  - EnemyHurtbox
+  - EnemyAttack
+  - PlayerHurtbox
+  - Projectile
+  - Pickup
   - 
   - 
   - 

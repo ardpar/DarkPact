@@ -11,16 +11,28 @@ namespace DarkPact.Core
         float _timer;
         Color _startColor;
 
-        public void Setup(int damage, Vector2 position, bool isCritical = false)
+        public enum DamageType { Normal, Critical, Heal, Poison }
+
+        public void Setup(int damage, Vector2 position, bool isCritical = false, DamageType type = DamageType.Normal)
         {
             transform.position = position + Vector2.up * 0.5f;
 
             _text = GetComponent<TMPro.TextMeshPro>();
             if (_text == null) return;
 
-            _text.text = damage.ToString();
+            _text.text = type == DamageType.Heal ? $"+{damage}" : damage.ToString();
             _text.fontSize = isCritical ? 8f : 5f;
-            _text.color = Color.white;
+
+            _text.color = type switch
+            {
+                DamageType.Critical => new Color(1f, 0.85f, 0f), // gold/yellow
+                DamageType.Heal => new Color(0.2f, 1f, 0.2f),   // green
+                DamageType.Poison => new Color(0.6f, 0f, 0.8f),  // purple
+                _ => Color.white
+            };
+            if (isCritical && type == DamageType.Normal)
+                _text.color = new Color(1f, 0.85f, 0f);
+
             _startColor = _text.color;
             _timer = _lifetime;
 

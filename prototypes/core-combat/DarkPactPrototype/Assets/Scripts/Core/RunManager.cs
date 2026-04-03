@@ -78,9 +78,28 @@ namespace DarkPact.Core
         {
             TransitionTo(RunState.DungeonPhase);
 
+            // Generate and build dungeon
+            if (ServiceLocator.TryGet<DungeonGenerator>(out var gen))
+            {
+                var layout = gen.Generate(GetSubSeed("dungeon"));
+                if (ServiceLocator.TryGet<DungeonManager>(out var dungeonMgr))
+                {
+                    dungeonMgr.BuildDungeon(layout);
+                }
+            }
+
             // Resume gameplay
             if (ServiceLocator.TryGet<GameManager>(out var gm))
                 gm.RequestStateChange(GameState.Playing);
+        }
+
+        public void OnRoomEntered(int roomIndex, RoomType type)
+        {
+            CurrentRoom = roomIndex;
+            Stats.RoomsExplored++;
+
+            if (type == RoomType.Boss)
+                TransitionTo(RunState.BossPhase);
         }
 
         public void OnRoomCleared()

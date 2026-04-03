@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +11,8 @@ namespace DarkPact.Core
         [SerializeField] GameObject _overlay;
         [SerializeField] CanvasGroup _overlayCanvasGroup;
         [SerializeField] TMPro.TextMeshProUGUI _flavorText;
-        [SerializeField] GameObject _cardContainer;
-        [SerializeField] Button _selectButton;
-
-        [Header("Card Display")]
-        [SerializeField] TMPro.TextMeshProUGUI _pactNameText;
-        [SerializeField] TMPro.TextMeshProUGUI _boonText;
-        [SerializeField] TMPro.TextMeshProUGUI _baneText;
+        [SerializeField] Transform _cardContainer;
+        [SerializeField] GameObject _pactCardPrefab;
 
         [Header("Timing")]
         [SerializeField] float _overlayFadeDuration = 0.5f;
@@ -25,12 +21,11 @@ namespace DarkPact.Core
         enum UIState { Hidden, Appearing, Selecting, Selected }
         UIState _state = UIState.Hidden;
 
+        readonly List<GameObject> _spawnedCards = new();
+
         void Start()
         {
             if (_overlay) _overlay.SetActive(false);
-            if (_cardContainer) _cardContainer.SetActive(false);
-            if (_selectButton) _selectButton.onClick.AddListener(OnSelectClicked);
-
             RunManager.OnRunStateChanged += OnRunStateChanged;
         }
 
@@ -49,21 +44,54 @@ namespace DarkPact.Core
         {
             if (_state != UIState.Hidden) return;
             _state = UIState.Appearing;
+            gameObject.SetActive(true);
 
-            // Pause gameplay
             Time.timeScale = 0f;
 
-            // Setup card content — MVP: just Katliam Paktı
-            if (_pactNameText) _pactNameText.text = "Katliam Paktı";
-            if (_boonText) _boonText.text = "<color=#4CAF50>BOON:</color> +%60 hasar";
-            if (_baneText) _baneText.text = "<color=#F44336>BANE:</color> Düşmanlar bir kez dirilir";
+            ClearCards();
+
+            // Get 3 pact options
+            PactDefinition[] options = null;
+            if (ServiceLocator.TryGet<PactManager>(out var pact))
+                options = pact.GetRandomPactOptions(3);
+
+            if (options == null || options.Length == 0)
+            {
+                // No pacts left, skip
+                _state = UIState.Hidden;
+                Time.timeScale = 1f;
+                if (ServiceLocator.TryGet<RunManager>(out var run))
+                    run.OnPactSelected();
+                return;
+            }
+
+            // Spawn cards
+            foreach (var p in options)
+            {
+                if (_pactCardPrefab == null || _cardContainer == null) break;
+                var cardObj = Instantiate(_pactCardPrefab, _cardContainer);
+                var card = cardObj.GetComponent<PactCardUI>();
+                if (card != null)
+                    card.Setup(p, OnPactChosen);
+                _spawnedCards.Add(cardObj);
+            }
 
             StartCoroutine(AppearSequence());
         }
 
+        void OnPactChosen(PactDefinition chosen)
+        {
+            if (_state != UIState.Selecting) return;
+            _state = UIState.Selected;
+
+            if (ServiceLocator.TryGet<PactManager>(out var pact))
+                pact.ActivatePact(chosen.Id);
+
+            StartCoroutine(SelectionSequence());
+        }
+
         IEnumerator AppearSequence()
         {
-            // Show overlay with fade
             if (_overlay) _overlay.SetActive(true);
 
             if (_overlayCanvasGroup)
@@ -78,7 +106,6 @@ namespace DarkPact.Core
                 }
             }
 
-            // Show flavor text
             if (_flavorText)
             {
                 _flavorText.gameObject.SetActive(true);
@@ -87,32 +114,17 @@ namespace DarkPact.Core
 
             yield return new WaitForSecondsRealtime(_cardAppearDelay);
 
-            // Show card
-            if (_cardContainer) _cardContainer.SetActive(true);
+            // Show cards
+            foreach (var card in _spawnedCards)
+                card.SetActive(true);
 
             _state = UIState.Selecting;
         }
 
-        void OnSelectClicked()
-        {
-            if (_state != UIState.Selecting) return;
-            _state = UIState.Selected;
-
-            // Activate pact
-            if (ServiceLocator.TryGet<PactManager>(out var pact))
-                pact.ActivateKatliamPact();
-
-            StartCoroutine(SelectionSequence());
-        }
-
         IEnumerator SelectionSequence()
         {
-            // Flash effect
-            if (_pactNameText) _pactNameText.color = Color.yellow;
+            yield return new WaitForSecondsRealtime(0.3f);
 
-            yield return new WaitForSecondsRealtime(0.5f);
-
-            // Fade out overlay
             if (_overlayCanvasGroup)
             {
                 float t = 0f;
@@ -124,27 +136,22 @@ namespace DarkPact.Core
                 }
             }
 
-            // Hide everything
+            ClearCards();
             if (_overlay) _overlay.SetActive(false);
-            if (_cardContainer) _cardContainer.SetActive(false);
             if (_flavorText) _flavorText.gameObject.SetActive(false);
-            if (_pactNameText) _pactNameText.color = Color.white;
 
             _state = UIState.Hidden;
-
-            // Resume gameplay
             Time.timeScale = 1f;
 
-            // Notify RunManager
             if (ServiceLocator.TryGet<RunManager>(out var run))
                 run.OnPactSelected();
         }
 
-        // Keyboard shortcut for prototype
-        void Update()
+        void ClearCards()
         {
-            if (_state == UIState.Selecting && Input.GetKeyDown(KeyCode.Return))
-                OnSelectClicked();
+            foreach (var card in _spawnedCards)
+                if (card != null) Destroy(card);
+            _spawnedCards.Clear();
         }
     }
 }

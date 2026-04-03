@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "unity": {
-      "type": "url",
-      "url": "http://localhost:29498/"
-    }
-  }
-}

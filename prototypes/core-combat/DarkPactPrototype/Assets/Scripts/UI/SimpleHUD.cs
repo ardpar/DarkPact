@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace DarkPact.Core
 {
@@ -14,6 +15,8 @@ namespace DarkPact.Core
         [SerializeField] TMPro.TextMeshProUGUI _killCountText;
 
         Health _playerHealth;
+        PactManager _pactManager;
+        InputAction _submitAction;
 
         void Start()
         {
@@ -22,6 +25,16 @@ namespace DarkPact.Core
             if (_pactIcon) _pactIcon.SetActive(false);
 
             GameManager.OnGameStateChanged += OnGameStateChanged;
+
+            // Cache PactManager
+            ServiceLocator.TryGet<PactManager>(out _pactManager);
+
+            // Bind restart to Submit action (Enter / left-click) from UI map
+            var playerInput = FindAnyObjectByType<PlayerInput>();
+            if (playerInput != null)
+            {
+                _submitAction = playerInput.actions.FindAction("Submit");
+            }
         }
 
         void OnDestroy()
@@ -36,8 +49,7 @@ namespace DarkPact.Core
             // Find player if not yet
             if (_playerHealth == null)
             {
-                var player = FindAnyObjectByType<PlayerController>();
-                if (player != null)
+                if (ServiceLocator.TryGet<PlayerController>(out var player))
                 {
                     _playerHealth = player.GetComponent<Health>();
                     _playerHealth.OnHealthChanged += UpdateHP;
@@ -48,19 +60,20 @@ namespace DarkPact.Core
             // Restart on GameOver
             if (ServiceLocator.TryGet<GameManager>(out var gm) && gm.CurrentState == GameState.GameOver)
             {
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Keyboard.current != null)
                 {
-                    gm.RequestStateChange(GameState.Playing);
-                    UnityEngine.SceneManagement.SceneManager.LoadScene(
-                        UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+                    if (Keyboard.current.rKey.wasPressedThisFrame)
+                        gm.RestartGameplay();
+                    else if (Keyboard.current.escapeKey.wasPressedThisFrame)
+                        gm.LoadMainMenuScene();
                 }
             }
 
             // Pact icon visibility
             if (_pactIcon != null)
             {
-                var pact = FindAnyObjectByType<PactManager>();
-                _pactIcon.SetActive(pact != null && pact.IsKatliamActive);
+                if (_pactManager == null) ServiceLocator.TryGet<PactManager>(out _pactManager);
+                _pactIcon.SetActive(_pactManager != null && _pactManager.IsKatliamActive);
             }
 
             // Run stats display

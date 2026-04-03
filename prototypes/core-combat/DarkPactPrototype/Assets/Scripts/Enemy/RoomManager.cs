@@ -7,39 +7,68 @@ namespace DarkPact.Core
     {
         [SerializeField] GameObject _enemyPrefab;
         [SerializeField] Transform[] _spawnPoints;
-        [SerializeField] int _enemyCount = 4;
+        [SerializeField] int _baseEnemyCount = 4;
 
         readonly List<EnemyAI> _activeEnemies = new();
         bool _isCleared;
 
         public event System.Action OnRoomCleared;
 
-        void Start()
+        void Awake()
         {
-            SpawnEnemies();
+            ServiceLocator.Register(this);
         }
 
-        void SpawnEnemies()
+        void Start()
         {
-            if (_enemyPrefab == null || _spawnPoints == null || _spawnPoints.Length == 0) return;
+            // Only auto-spawn if no DungeonManager (legacy single-room mode)
+            if (!ServiceLocator.TryGet<DungeonManager>(out _))
+                SpawnEnemiesForRoom(transform.position, 1f);
+        }
 
-            for (int i = 0; i < _enemyCount; i++)
+        public void SpawnEnemiesForRoom(Vector2 roomCenter, float difficulty)
+        {
+            ClearEnemies();
+            _isCleared = false;
+
+            if (_enemyPrefab == null) return;
+
+            int count = Mathf.RoundToInt(_baseEnemyCount * difficulty);
+            count = Mathf.Clamp(count, 2, 10);
+
+            for (int i = 0; i < count; i++)
             {
-                var spawnPoint = _spawnPoints[i % _spawnPoints.Length];
-                var enemyObj = Instantiate(_enemyPrefab, spawnPoint.position, Quaternion.identity);
+                // Spawn around room center with offset
+                float angle = (360f / count) * i * Mathf.Deg2Rad;
+                float radius = 3f;
+                Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+                Vector2 spawnPos = roomCenter + offset;
+
+                var enemyObj = Instantiate(_enemyPrefab, spawnPos, Quaternion.identity);
                 var enemy = enemyObj.GetComponent<EnemyAI>();
 
                 if (enemy != null)
                 {
-                    // Katliam Paktı check
-                    var pact = FindAnyObjectByType<PactManager>();
-                    if (pact != null && pact.IsKatliamActive)
+                    if (ServiceLocator.TryGet<PactManager>(out var pact) && pact.IsKatliamActive)
                         enemy.CanRespawn = true;
 
                     enemy.OnEnemyDied += HandleEnemyDied;
                     _activeEnemies.Add(enemy);
                 }
             }
+        }
+
+        void ClearEnemies()
+        {
+            foreach (var enemy in _activeEnemies)
+            {
+                if (enemy != null)
+                {
+                    enemy.OnEnemyDied -= HandleEnemyDied;
+                    Destroy(enemy.gameObject);
+                }
+            }
+            _activeEnemies.Clear();
         }
 
         void HandleEnemyDied(EnemyAI enemy)
@@ -52,7 +81,8 @@ namespace DarkPact.Core
                 _isCleared = true;
                 OnRoomCleared?.Invoke();
 
-                // Notify RunManager
+                if (ServiceLocator.TryGet<DungeonManager>(out var dungeon))
+                    dungeon.OnCurrentRoomCleared();
                 if (ServiceLocator.TryGet<RunManager>(out var run))
                     run.OnRoomCleared();
 

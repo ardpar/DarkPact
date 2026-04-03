@@ -5,7 +5,6 @@ namespace DarkPact.Core
     public class CameraController : MonoBehaviour
     {
         [SerializeField] float _smoothTime = 0.15f;
-        [SerializeField] float _lookAheadDistance = 1f;
         [SerializeField] int _pixelsPerUnit = 16;
 
         Transform _target;
@@ -16,12 +15,26 @@ namespace DarkPact.Core
         float _shakeDuration;
         float _shakeTimer;
 
+        // Room bounds clamp
+        bool _hasBounds;
+        Vector2 _boundsMin;
+        Vector2 _boundsMax;
+
+        public void SetRoomBounds(Vector2 min, Vector2 max)
+        {
+            _hasBounds = true;
+            _boundsMin = min;
+            _boundsMax = max;
+        }
+
+        public void ClearBounds() => _hasBounds = false;
+
         void LateUpdate()
         {
             if (_target == null)
             {
-                var player = FindAnyObjectByType<PlayerController>();
-                if (player != null) _target = player.transform;
+                if (ServiceLocator.TryGet<PlayerController>(out var player))
+                    _target = player.transform;
                 else return;
             }
 
@@ -30,6 +43,17 @@ namespace DarkPact.Core
             targetPos.z = transform.position.z;
 
             Vector3 smoothed = Vector3.SmoothDamp(transform.position, targetPos, ref _velocity, _smoothTime);
+
+            // Room bounds clamp
+            if (_hasBounds)
+            {
+                var cam = GetComponent<Camera>();
+                float camH = cam.orthographicSize;
+                float camW = camH * cam.aspect;
+
+                smoothed.x = Mathf.Clamp(smoothed.x, _boundsMin.x + camW, _boundsMax.x - camW);
+                smoothed.y = Mathf.Clamp(smoothed.y, _boundsMin.y + camH, _boundsMax.y - camH);
+            }
 
             // Screen shake
             if (_shakeTimer > 0)

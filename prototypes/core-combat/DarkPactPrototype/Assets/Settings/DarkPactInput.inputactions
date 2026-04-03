@@ -18,9 +18,10 @@
                     "name": "Attack",
                     "type": "Button",
                     "id": "a1b2c3d4-0002-0002-0001-000000000001",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Dash",
@@ -28,7 +29,8 @@
                     "id": "a1b2c3d4-0002-0003-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Skill1",
@@ -36,7 +38,8 @@
                     "id": "a1b2c3d4-0002-0004-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Skill2",
@@ -44,7 +47,8 @@
                     "id": "a1b2c3d4-0002-0005-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Skill3",
@@ -52,7 +56,8 @@
                     "id": "a1b2c3d4-0002-0006-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Skill4",
@@ -60,7 +65,8 @@
                     "id": "a1b2c3d4-0002-0007-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "AimPosition",
@@ -77,17 +83,18 @@
                     "id": "a1b2c3d4-0002-0009-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "WASD",
                     "id": "b1b2c3d4-0003-0001-0001-000000000001",
-                    "path": "",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "",
                     "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
@@ -245,7 +252,8 @@
                     "id": "a1b2c3d4-0002-0011-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Cancel",
@@ -253,17 +261,18 @@
                     "id": "a1b2c3d4-0002-0012-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "WASD",
                     "id": "c1b2c3d4-0003-0001-0001-000000000001",
-                    "path": "",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "",
                     "action": "Navigate",
                     "isComposite": true,
                     "isPartOfComposite": false
@@ -315,10 +324,10 @@
                 {
                     "name": "Arrow Keys",
                     "id": "c1b2c3d4-0003-0006-0001-000000000001",
-                    "path": "",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "",
                     "action": "Navigate",
                     "isComposite": true,
                     "isPartOfComposite": false
@@ -412,7 +421,8 @@
                     "id": "a1b2c3d4-0002-0013-0001-000000000001",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [

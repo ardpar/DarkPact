@@ -4,6 +4,9 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PrototypeArena.unity
+    guid: 760dbfb85c7c34910ad4e64604f9090e
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

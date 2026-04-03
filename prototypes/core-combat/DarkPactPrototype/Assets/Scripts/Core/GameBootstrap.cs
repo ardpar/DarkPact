@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace DarkPact.Core
 {
@@ -8,8 +9,11 @@ namespace DarkPact.Core
 
         void Start()
         {
-            // Wire GameManager state changes to RunManager
             GameManager.OnGameStateChanged += OnGameStateChanged;
+
+            // Auto-start run when Gameplay scene loads
+            if (ServiceLocator.TryGet<RunManager>(out var run))
+                run.StartNewRun();
         }
 
         void OnDestroy()
@@ -22,7 +26,6 @@ namespace DarkPact.Core
         {
             HitstopManager.Tick();
 
-            // Lazy-bind to player health for stat tracking
             if (_playerHealth == null)
             {
                 if (ServiceLocator.TryGet<PlayerController>(out var player))
@@ -39,12 +42,7 @@ namespace DarkPact.Core
 
         void OnGameStateChanged(GameState oldState, GameState newState)
         {
-            // Auto-start a new run when entering Playing from MainMenu
-            if (oldState == GameState.MainMenu && newState == GameState.Playing)
-            {
-                if (ServiceLocator.TryGet<RunManager>(out var run))
-                    run.StartNewRun();
-            }
+            // No longer needed — run starts automatically in Start()
         }
 
         void OnPlayerDamaged(int amount, Vector2 dir)
@@ -65,16 +63,6 @@ namespace DarkPact.Core
             {
                 _playerHealth.OnDamaged -= OnPlayerDamaged;
                 _playerHealth.OnDeath -= OnPlayerDied;
-            }
-        }
-
-        // Prototype shortcut: press N to start new run manually
-        void LateUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                if (ServiceLocator.TryGet<RunManager>(out var run))
-                    run.StartNewRun();
             }
         }
     }

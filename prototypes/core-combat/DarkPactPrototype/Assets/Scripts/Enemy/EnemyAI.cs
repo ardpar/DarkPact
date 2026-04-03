@@ -30,6 +30,12 @@ namespace DarkPact.Core
         public bool CanRespawn { get; set; }
         public bool IsRespawnKill => _hasRespawned;
 
+        // A* pathfinding
+        System.Collections.Generic.List<Vector2> _path;
+        int _pathIndex;
+        float _pathRecalcTimer;
+        const float PathRecalcInterval = 0.3f;
+
         public event System.Action<EnemyAI> OnEnemyDied;
 
         void Awake()
@@ -72,7 +78,7 @@ namespace DarkPact.Core
                     break;
 
                 case State.Chase:
-                    Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+                    Vector2 dir = GetMoveDirection();
                     _rb.linearVelocity = dir * _moveSpeed;
                     UpdateSpriteDirection(dir);
 
@@ -145,6 +151,17 @@ namespace DarkPact.Core
             if (ServiceLocator.TryGet<RunManager>(out var run))
                 run.RecordKill();
 
+            // Kan Kalkanı: +5 TempHP on kill
+            if (ServiceLocator.TryGet<PactManager>(out var pact) && pact.IsKanKalkaniActive)
+            {
+                if (ServiceLocator.TryGet<PlayerController>(out var player))
+                    player.GetComponent<Health>()?.AddTempHP(5);
+            }
+
+            // Loot drop
+            var dropper = GetComponent<LootDropper>();
+            if (dropper != null) dropper.DropLoot(transform.position);
+
             OnEnemyDied?.Invoke(this);
             Destroy(gameObject, 1f);
         }
@@ -173,6 +190,37 @@ namespace DarkPact.Core
             _sprite.color = Color.white;
             yield return new WaitForSeconds(0.1f);
             if (_sprite) _sprite.color = origColor;
+        }
+
+        Vector2 GetMoveDirection()
+        {
+            if (_player == null) return Vector2.zero;
+
+            // Try A* pathfinding
+            _pathRecalcTimer -= Time.deltaTime;
+            if (_pathRecalcTimer <= 0 || _path == null)
+            {
+                _pathRecalcTimer = PathRecalcInterval;
+                if (ServiceLocator.TryGet<AStarPathfinder>(out var pathfinder))
+                {
+                    _path = pathfinder.FindPath(transform.position, _player.position);
+                    _pathIndex = 0;
+                }
+            }
+
+            if (_path != null && _pathIndex < _path.Count)
+            {
+                Vector2 waypoint = _path[_pathIndex];
+                float distToWaypoint = Vector2.Distance(transform.position, waypoint);
+                if (distToWaypoint < 0.5f)
+                    _pathIndex++;
+
+                if (_pathIndex < _path.Count)
+                    return (_path[_pathIndex] - (Vector2)transform.position).normalized;
+            }
+
+            // Fallback: direct chase
+            return ((Vector2)_player.position - (Vector2)transform.position).normalized;
         }
 
         void UpdateSpriteDirection(Vector2 dir)

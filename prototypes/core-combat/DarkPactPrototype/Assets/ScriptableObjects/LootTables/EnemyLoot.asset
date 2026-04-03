@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b4fa45ccede4315a1dabae11ea88fd, type: 3}
+  m_Name: EnemyLoot
+  m_EditorClassIdentifier: Assembly-CSharp::DarkPact.Core.LootTable
+  Entries:
+  - Item: {fileID: 11400000, guid: 9158406ba645b441d914c881ce067280, type: 2}
+    Weight: 1
+  - Item: {fileID: 11400000, guid: e70ec63c717e34280996cab415f2a581, type: 2}
+    Weight: 1
+  - Item: {fileID: 11400000, guid: 12ccbe977553940118086e5d82a78459, type: 2}
+    Weight: 1
+  - Item: {fileID: 11400000, guid: 0c5c55287fde04a4aa053defbeb88b0b, type: 2}
+    Weight: 1
+  - Item: {fileID: 11400000, guid: 0a757b1f34dd8492099cf2dc385aefec, type: 2}
+    Weight: 1
+  DropChance: 0.5

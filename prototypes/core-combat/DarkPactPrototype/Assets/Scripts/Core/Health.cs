@@ -59,6 +59,15 @@ namespace DarkPact.Core
             OnHealthChanged?.Invoke(CurrentHP, _maxHP);
         }
 
+        public void AddTempHP(int amount) => AddTemporaryHP(amount, _maxHP);
+
+        public void AddMaxHP(int amount)
+        {
+            _maxHP += amount;
+            CurrentHP += amount;
+            OnHealthChanged?.Invoke(CurrentHP, _maxHP);
+        }
+
         public void ResetHealth()
         {
             CurrentHP = _maxHP;

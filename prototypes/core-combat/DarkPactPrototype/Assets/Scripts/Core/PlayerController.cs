@@ -52,17 +52,40 @@ namespace DarkPact.Core
 
         float EffectiveDashCooldown => DashCooldownOverride >= 0 ? DashCooldownOverride : _dashCooldown;
 
+        PlayerInput _playerInput;
+        InputAction _moveAction;
+        InputAction _attackAction;
+        InputAction _dashAction;
+
         void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
             _health = GetComponent<Health>();
             _sprite = GetComponentInChildren<SpriteRenderer>();
             _animator = GetComponentInChildren<Animator>();
+            _playerInput = GetComponent<PlayerInput>();
 
             _health.OnDamaged += OnDamaged;
             _health.OnDeath += OnDeath;
 
             ServiceLocator.Register(this);
+        }
+
+        void OnEnable()
+        {
+            if (_playerInput == null) return;
+            _moveAction = _playerInput.actions["Move"];
+            _attackAction = _playerInput.actions["Attack"];
+            _dashAction = _playerInput.actions["Dash"];
+
+            _attackAction.performed += OnAttack;
+            _dashAction.performed += OnDash;
+        }
+
+        void OnDisable()
+        {
+            if (_attackAction != null) _attackAction.performed -= OnAttack;
+            if (_dashAction != null) _dashAction.performed -= OnDash;
         }
 
         void OnDestroy()
@@ -107,6 +130,10 @@ namespace DarkPact.Core
             Vector2 aimDir = ((Vector2)_aimWorldPos - (Vector2)transform.position).normalized;
             if (aimDir.sqrMagnitude > 0.01f) _lastFacingDir = aimDir;
 
+            // Read move input every frame from action
+            if (_moveAction != null)
+                _moveInput = _moveAction.ReadValue<Vector2>();
+
             UpdateSpriteDirection();
         }
 
@@ -118,6 +145,11 @@ namespace DarkPact.Core
             if (_isDashing)
             {
                 _rb.linearVelocity = _dashDirection * _dashSpeed;
+
+                // Dash trail afterimage
+                if (_sprite != null && ServiceLocator.TryGet<VFXManager>(out var vfx))
+                    vfx.PlayDashTrail(transform.position, _sprite.sprite, _sprite.flipX);
+
                 return;
             }
 
@@ -125,24 +157,16 @@ namespace DarkPact.Core
             _rb.linearVelocity = _moveInput.normalized * _moveSpeed * speedMod;
         }
 
-        // Input System callbacks
-        public void OnMove(InputAction.CallbackContext ctx)
+        void OnAttack(InputAction.CallbackContext ctx)
         {
-            _moveInput = ctx.ReadValue<Vector2>();
-        }
-
-        public void OnAttack(InputAction.CallbackContext ctx)
-        {
-            if (!ctx.performed) return;
             if (_isDashing || _isStaggered || !_health.IsAlive) return;
             if (_attackCooldownTimer > 0) return;
 
             PerformAttack();
         }
 
-        public void OnDash(InputAction.CallbackContext ctx)
+        void OnDash(InputAction.CallbackContext ctx)
         {
-            if (!ctx.performed) return;
             if (_isDashing || _isStaggered || !_health.IsAlive) return;
             if (_dashCooldownTimer > 0) return;
 
@@ -184,13 +208,13 @@ namespace DarkPact.Core
                         // Hitstop — longer on crit
                         HitstopManager.TriggerHitstop(isCrit ? 0.1f : 0.05f);
 
-                        // Screen shake — GDD defaults: intensity 0.3, duration 0.1s
+                        // VFX feedback
+                        ServiceLocator.TryGet<VFXManager>(out var vfx);
                         float shakeIntensity = isCrit ? 0.5f : 0.3f;
-                        VFXManager.Instance?.ShakeCamera(shakeIntensity, 0.1f);
+                        vfx?.ShakeCamera(shakeIntensity, 0.1f);
 
-                        // VFX hit spark
                         Vector2 hitPos = (origin + (Vector2)hit.transform.position) * 0.5f;
-                        VFXManager.Instance?.PlayHitSpark(hitPos);
+                        vfx?.PlayHitSpark(hitPos);
                     }
                 }
             }
@@ -233,9 +257,10 @@ namespace DarkPact.Core
         System.Collections.IEnumerator FlashWhite()
         {
             if (_sprite == null) yield break;
+            Color origColor = _sprite.color;
             _sprite.color = Color.white;
             yield return new WaitForSeconds(0.1f);
-            if (_sprite) _sprite.color = Color.white; // reset to default
+            if (_sprite) _sprite.color = origColor;
         }
 
         void UpdateSpriteDirection()
