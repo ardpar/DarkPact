@@ -30,6 +30,12 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 @docs/engine-reference/unity/VERSION.md
 
+## Architecture Decisions
+
+@docs/architecture/ADR-001-state-management.md
+@docs/architecture/ADR-002-2d-physics.md
+@docs/architecture/ADR-003-pathfinding.md
+
 ## Technical Preferences
 
 @.claude/docs/technical-preferences.md
