@@ -24,9 +24,9 @@ Dark Pact is a top-down hack-and-slash roguelite driven by the Dark Pact mechani
 | 5 | Camera System | Core | MVP | Designed | design/gdd/camera-system.md | Game Manager, Room/Tilemap |
 | 6 | Player Controller | Core | MVP | Designed | design/gdd/player-controller.md | Input System, Game Manager |
 | 7 | Health & Damage | Gameplay | MVP | Designed | design/gdd/health-damage.md | Game Manager |
-| 8 | Item Database | Economy | MVP | Not Started | — | Game Manager |
-| 9 | Run Manager | Core | MVP | Not Started | — | Game Manager |
-| 10 | Combat System | Gameplay | MVP | Not Started | — | Player Controller, Health & Damage, VFX, Audio Manager |
+| 8 | Item Database | Economy | MVP | Designed | design/gdd/item-database.md | Game Manager |
+| 9 | Run Manager | Core | MVP | Designed | design/gdd/run-manager.md | Game Manager |
+| 10 | Combat System | Gameplay | MVP | Designed | design/gdd/combat-system.md | Player Controller, Health & Damage, VFX, Audio Manager |
 | 11 | Status Effect System | Gameplay | MVP | Not Started | — | Health & Damage, Combat System |
 | 12 | Enemy System | Gameplay | MVP | Not Started | — | Health & Damage, Room/Tilemap, Combat System |
 | 13 | Enemy AI | Gameplay | MVP | Not Started | — | Enemy System, Player Controller |
@@ -184,10 +184,10 @@ Dark Pact is a top-down hack-and-slash roguelite driven by the Dark Pact mechani
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 30 |
-| Design docs started | 7 |
+| Design docs started | 10 |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
-| MVP systems designed | 7/20 |
+| MVP systems designed | 10/20 |
 | Vertical Slice systems designed | 0/6 |
 
 ---
