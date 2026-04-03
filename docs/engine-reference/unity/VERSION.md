@@ -1,57 +1,40 @@
-# Unity Engine — Version Reference
+# Unity — Version Reference
 
 | Field | Value |
 |-------|-------|
-| **Engine Version** | Unity 6.3 LTS |
-| **Release Date** | December 2025 |
-| **Project Pinned** | 2026-02-13 |
-| **Last Docs Verified** | 2026-02-13 |
+| **Engine Version** | Unity 6.3 LTS (6000.3.x) |
+| **Release Date** | Early 2026 |
+| **Project Pinned** | 2026-04-03 |
+| **Last Docs Verified** | 2026-04-03 |
 | **LLM Knowledge Cutoff** | May 2025 |
 
 ## Knowledge Gap Warning
 
-The LLM's training data likely covers Unity up to ~2022 LTS (2022.3). The entire
-Unity 6 release series (formerly Unity 2023 Tech Stream) introduced significant
-changes that the model does NOT know about. Always cross-reference this directory
-before suggesting Unity API calls.
+The LLM's training data likely covers Unity up to ~2023.x / early Unity 6 (6000.0).
+Unity 6.1, 6.2, and 6.3 introduced changes that the model may NOT know about.
+Always cross-reference this directory before suggesting Unity API calls for newer features.
 
 ## Post-Cutoff Version Timeline
 
 | Version | Release | Risk Level | Key Theme |
 |---------|---------|------------|-----------|
-| 6.0 | Oct 2024 | HIGH | Unity 6 rebrand, new rendering features, Entities 1.3, DOTS improvements |
-| 6.1 | Nov 2024 | MEDIUM | Bug fixes, stability improvements |
-| 6.2 | Dec 2024 | MEDIUM | Performance optimizations, new input system improvements |
-| 6.3 LTS | Dec 2025 | HIGH | First LTS since 6.0, production-ready DOTS, enhanced graphics features |
+| Unity 6.0 LTS | Mid 2024 | LOW | Render Graph, GPU Resident Drawer, APV, STP |
+| Unity 6.1 | Late 2024 | MEDIUM | Incremental updates on 6.0 |
+| Unity 6.2 | Early 2025 | MEDIUM | URP/HDRP improvements, UI Toolkit updates |
+| Unity 6.3 LTS | Early 2026 | MEDIUM | Box2D v3, URP Compatibility Mode removed, Render Graph unified |
 
-## Major Changes from 2022 LTS to Unity 6.3 LTS
+## Key Changes for This Project (2D Roguelite)
 
-### Breaking Changes
-- **Entities/DOTS**: Major API overhaul in Entities 1.0+, complete redesign of ECS patterns
-- **Input System**: Legacy Input Manager deprecated, new Input System is default
-- **Rendering**: URP/HDRP significant upgrades, SRP Batcher improvements
-- **Addressables**: Asset management workflow changes
-- **Scripting**: C# 9 support, new API patterns
-
-### New Features (Post-Cutoff)
-- **DOTS**: Production-ready Entity Component System (Entities 1.3+)
-- **Graphics**: Enhanced URP/HDRP pipelines, GPU Resident Drawer
-- **Multiplayer**: Netcode for GameObjects improvements
-- **UI Toolkit**: Production-ready for runtime UI (replaces UGUI for new projects)
-- **Async Asset Loading**: Improved Addressables performance
-- **Web**: WebGPU support
-
-### Deprecated Systems
-- **Legacy Input Manager**: Use new Input System package
-- **Legacy Particle System**: Use Visual Effect Graph
-- **UGUI**: Still supported, but UI Toolkit recommended for new projects
-- **Old ECS (GameObjectEntity)**: Replaced by modern DOTS/Entities
+- **Box2D v3 integration**: Multi-threaded 2D physics via `UnityEngine.LowLevelPhysics2D`
+- **URP Compatibility Mode removed**: Must use Render Graph API (no fallback)
+- **2D Renderer supports Mesh/Skinned Mesh Renderer**: 3D objects in 2D scenes now possible
+- **UI Toolkit improvements**: SVG vector graphics, USS filters, UI Test Framework
+- **Bloom**: URP Bloom now supports Kawase and Dual filtering (better mobile perf)
+- **SerializeField**: Can only apply to fields, not properties/methods
 
 ## Verified Sources
 
-- Official docs: https://docs.unity3d.com/6000.0/Documentation/Manual/index.html
-- Unity 6 release: https://unity.com/releases/unity-6
-- Unity 6.3 LTS announcement: https://unity.com/blog/unity-6-3-lts-is-now-available
-- Migration guide: https://docs.unity3d.com/6000.0/Documentation/Manual/upgrade-guides.html
-- Unity 6 support: https://unity.com/releases/unity-6/support
-- C# API reference: https://docs.unity3d.com/6000.0/Documentation/ScriptReference/index.html
+- What's new in 6.3: https://docs.unity3d.com/6000.3/Documentation/Manual/WhatsNewUnity63.html
+- Upgrade to 6.3: https://docs.unity3d.com/6000.3/Documentation/Manual/UpgradeGuideUnity63.html
+- Upgrade to 6.0: https://docs.unity3d.com/6000.2/Documentation/Manual/UpgradeGuideUnity6.html
+- Unity 6 releases: https://unity.com/releases/unity-6/support

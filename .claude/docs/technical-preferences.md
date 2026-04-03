@@ -5,32 +5,34 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: Unity 6.3 LTS (6000.3.x)
+- **Language**: C#
+- **Rendering**: Universal Render Pipeline (URP) 2D
+- **Physics**: Unity 2D Physics (Box2D v3)
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: PascalCase (e.g., `PlayerController`)
+- **Public fields/properties**: PascalCase (e.g., `MoveSpeed`)
+- **Private fields**: _camelCase (e.g., `_moveSpeed`)
+- **Methods**: PascalCase (e.g., `TakeDamage()`)
+- **Events/Delegates**: PascalCase with `On` prefix (e.g., `OnHealthChanged`)
+- **Files**: PascalCase matching class (e.g., `PlayerController.cs`)
+- **Prefabs**: PascalCase (e.g., `PlayerCharacter.prefab`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_HEALTH`)
 
 ## Performance Budgets
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
+- **Target Framerate**: 60 fps
+- **Frame Budget**: 16.6 ms
 - **Draw Calls**: [TO BE CONFIGURED]
 - **Memory Ceiling**: [TO BE CONFIGURED]
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Framework**: NUnit + Unity Test Framework
+- **Minimum Coverage**: 80% for gameplay systems
+- **Required Tests**: Balance formulas, gameplay systems, pact synergy calculations
 
 ## Forbidden Patterns
 

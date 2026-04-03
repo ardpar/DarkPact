@@ -5,11 +5,11 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: Unity
+- **Engine**: Unity 6.3 LTS (6000.3.x)
 - **Language**: C#
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Unity Build Pipeline
+- **Asset Pipeline**: Unity Asset Import Pipeline + Addressables
 
 ## Project
 - **Name**: Dark Pact
@@ -28,7 +28,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Engine Version Reference
 
-@docs/engine-reference/godot/VERSION.md
+@docs/engine-reference/unity/VERSION.md
 
 ## Technical Preferences
 
