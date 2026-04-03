@@ -10,6 +10,8 @@ namespace DarkPact.Core
         [SerializeField] GameObject _pactIcon;
         [SerializeField] TMPro.TextMeshProUGUI _gameOverText;
         [SerializeField] TMPro.TextMeshProUGUI _restartText;
+        [SerializeField] TMPro.TextMeshProUGUI _roomCounterText;
+        [SerializeField] TMPro.TextMeshProUGUI _killCountText;
 
         Health _playerHealth;
 
@@ -59,6 +61,13 @@ namespace DarkPact.Core
             {
                 var pact = FindAnyObjectByType<PactManager>();
                 _pactIcon.SetActive(pact != null && pact.IsKatliamActive);
+            }
+
+            // Run stats display
+            if (ServiceLocator.TryGet<RunManager>(out var run))
+            {
+                if (_roomCounterText) _roomCounterText.text = $"Room {run.CurrentRoom + 1}";
+                if (_killCountText) _killCountText.text = $"Kills: {run.Stats.KillCount}";
             }
         }
 

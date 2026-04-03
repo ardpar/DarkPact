@@ -140,6 +140,11 @@ namespace DarkPact.Core
             _state = State.Dead;
             _rb.linearVelocity = Vector2.zero;
             if (_sprite) _sprite.color = new Color(1, 1, 1, 0.3f);
+
+            // Track kill in RunManager
+            if (ServiceLocator.TryGet<RunManager>(out var run))
+                run.RecordKill();
+
             OnEnemyDied?.Invoke(this);
             Destroy(gameObject, 1f);
         }

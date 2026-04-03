@@ -51,6 +51,11 @@ namespace DarkPact.Core
             {
                 _isCleared = true;
                 OnRoomCleared?.Invoke();
+
+                // Notify RunManager
+                if (ServiceLocator.TryGet<RunManager>(out var run))
+                    run.OnRoomCleared();
+
                 Debug.Log("Room Cleared!");
             }
         }

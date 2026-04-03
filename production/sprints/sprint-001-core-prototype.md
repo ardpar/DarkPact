@@ -66,6 +66,7 @@ Core combat loop'un oynanabilir prototipini oluştur: 1 odada düşmanlarla döv
 
 ## Definition of Done for this Sprint
 - [x] All Must Have tasks completed
+- [x] All Should Have tasks completed (RunManager, PactSelectionUI, DamageNumbers)
 - [ ] All tasks pass acceptance criteria
 - [ ] No S1 or S2 bugs in delivered features
 - [ ] Design documents updated for any deviations

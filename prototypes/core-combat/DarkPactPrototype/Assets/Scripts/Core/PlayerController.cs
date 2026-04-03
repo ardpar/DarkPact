@@ -173,6 +173,10 @@ namespace DarkPact.Core
                         int damage = Mathf.FloorToInt(_attackDamage * DamageMultiplier);
                         enemyHealth.ApplyDamage(damage, 0, 1f, _lastFacingDir);
 
+                        // Track damage dealt
+                        if (ServiceLocator.TryGet<RunManager>(out var run))
+                            run.RecordDamageDealt(damage);
+
                         // Hitstop
                         HitstopManager.TriggerHitstop(0.05f);
 
