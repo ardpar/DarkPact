@@ -17,6 +17,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 - **Genre**: Top-down hack-and-slash roguelite
 - **Core mechanic**: Karanlık Pakt sistemi
 - **GDD**: @design/gdd/GDD_DarkPact.md
+- **Systems Index**: @design/gdd/systems-index.md
 - **Asset pack**: ELV Games Ultimate TopDown Adventure (16x16 pixel art)
 
 > **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
