@@ -159,8 +159,10 @@ namespace DarkPact.Core
 
         void OnDamaged(int amount, Vector2 dir)
         {
-            // Knockback
-            _rb.AddForce(dir * 3f, ForceMode2D.Impulse);
+            // Knockback — GDD formula: baseKnockback × (1 + damageDealt / 100)
+            float baseKnockback = 0.5f; // Kılıç default
+            float knockbackForce = baseKnockback * (1f + amount / 100f);
+            _rb.AddForce(dir * knockbackForce, ForceMode2D.Impulse);
             if (_sprite) StartCoroutine(FlashWhite());
         }
 

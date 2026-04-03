@@ -17,6 +17,8 @@ namespace DarkPact.Core
         [SerializeField] float _attackArc = 90f;
         [SerializeField] int _attackDamage = 12;
         [SerializeField] float _attackCooldown = 0.3f;
+        [SerializeField] float _critChance = 0.1f;
+        [SerializeField] float _critMultiplier = 2.0f;
         [SerializeField] LayerMask _enemyLayer;
 
         Rigidbody2D _rb;
@@ -170,15 +172,21 @@ namespace DarkPact.Core
                     var enemyHealth = hit.GetComponent<Health>();
                     if (enemyHealth != null && enemyHealth.IsAlive)
                     {
-                        int damage = Mathf.FloorToInt(_attackDamage * DamageMultiplier);
+                        bool isCrit = Random.value < _critChance;
+                        float multiplier = DamageMultiplier * (isCrit ? _critMultiplier : 1f);
+                        int damage = Mathf.FloorToInt(_attackDamage * multiplier);
                         enemyHealth.ApplyDamage(damage, 0, 1f, _lastFacingDir);
 
                         // Track damage dealt
                         if (ServiceLocator.TryGet<RunManager>(out var run))
                             run.RecordDamageDealt(damage);
 
-                        // Hitstop
-                        HitstopManager.TriggerHitstop(0.05f);
+                        // Hitstop — longer on crit
+                        HitstopManager.TriggerHitstop(isCrit ? 0.1f : 0.05f);
+
+                        // Screen shake — GDD defaults: intensity 0.3, duration 0.1s
+                        float shakeIntensity = isCrit ? 0.5f : 0.3f;
+                        VFXManager.Instance?.ShakeCamera(shakeIntensity, 0.1f);
 
                         // VFX hit spark
                         Vector2 hitPos = (origin + (Vector2)hit.transform.position) * 0.5f;

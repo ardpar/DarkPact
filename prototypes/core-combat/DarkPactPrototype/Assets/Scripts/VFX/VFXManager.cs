@@ -7,7 +7,7 @@ namespace DarkPact.Core
         public static VFXManager Instance { get; private set; }
 
         [SerializeField] GameObject _hitSparkPrefab;
-        [SerializeField] int _poolSize = 10;
+        [SerializeField] int _poolSize = 15; // GDD: MaxConcurrent(10) × PoolMultiplier(1.5)
 
         GameObject[] _hitSparkPool;
         int _poolIndex;
