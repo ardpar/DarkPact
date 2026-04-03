@@ -68,7 +68,7 @@ Bazı boon/bane'ler basit stat modifier değil, özel kurallar gerektirir:
 
 | Rule | Sistem | Davranış |
 |------|--------|----------|
-| `EnemyRespawn` | Enemy System | `canRespawn=true` tüm düşmanlara uygulanır |
+| `EnemyRespawn` | Enemy System | `canRespawn=true` tüm düşmanlara uygulanır — **istisna: Boss'lar muaf** (`BossDefinition.canRespawn` override edilemez) |
 | `HealRestriction` | Health & Damage | `CanHeal()` false döner |
 | `UnlimitedDash` | Player Controller | DashCooldown override = 0 |
 | `StationaryDamage` | Status Effect | Durma > 1s → DoT başlar (bkz. Status Effect GDD) |

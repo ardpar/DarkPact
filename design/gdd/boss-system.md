@@ -24,6 +24,7 @@ Boss System, Dark Pact'in akt sonu boss savaşlarını yöneten sistemdir. Enemy
 5. **Stagger immunity**: Boss'lar normal stagger'a immune, sadece özel anlar (stun window) var
 6. **Enrage**: Savaş çok uzarsa (EnrageTimer) boss güçlenir — sonsuz kiting önlemi
 7. **No adds MVP**: MVP'de boss tek başına. VS'de minion spawn faz mekaniği eklenebilir.
+8. **Pakt istisnaları**: Boss'lar Katliam Paktı'nın `EnemyRespawn` kuralından muaftır — boss ölünce dirilmez. Bu istisna `BossDefinition.canRespawn = false` ile garanti edilir ve `EnemyRespawn` PactRule boss'ları atlar.
 
 ### MVP Boss: Minotaur (Akt 1)
 

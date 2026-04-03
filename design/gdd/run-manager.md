@@ -18,7 +18,7 @@ Oyuncu her run'ın benzersiz olduğunu hisseder — farklı paktlar, farklı dun
 ### Core Rules
 
 1. **Run lifecycle**: NewRun → PactSelection → DungeonPhase → (Milestone → PactSelection)* → BossPhase → RunEnd
-2. **Run seed**: Her run'a benzersiz seed atanır. Aynı seed = aynı dungeon layout + aynı loot tablosu (replay/debug için)
+2. **Run seed**: Her run'a benzersiz seed atanır. Aynı seed = aynı dungeon layout + aynı loot tablosu (replay/debug için). Run Manager seed'i tüm randomization kullanan sistemlere dağıtır: `RunSeedProvider.GetSubSeed(systemName)` ile her sistem deterministik ama birbirinden bağımsız alt-seed alır (ör: dungeon seed, loot seed, enemy seed).
 3. **Milestone'lar**: Her X oda temizlendikten sonra yeni pakt teklif edilir. MVP'de milestone = akt ortası (8. oda)
 4. **Akt ilerlemesi**: Akt 1 → Boss → Akt 2 → Boss → Akt 3 → Final Boss. MVP'de sadece Akt 1.
 5. **Run istatistikleri**: Süre, öldürme sayısı, alınan hasar, toplanan altın, seçilen paktlar — run sonunda gösterilir
@@ -56,7 +56,7 @@ RunData
 | **BossPhase** | Boss savaşı aktif | → RunEnd (boss yenilgisi/ölüm), → Starting (sonraki akt — MVP sonrası) |
 | **RunEnd** | Run bitti — istatistik ekranı | → Inactive (ana menüye dön), → Starting (yeni run) |
 
-**Milestone tetikleyici:** `totalRoomsCleared % MilestoneInterval == 0`
+**Milestone tetikleyici:** `totalRoomsCleared > 0 && totalRoomsCleared % MilestoneInterval == 0`
 
 ### Interactions with Other Systems
 
@@ -79,7 +79,7 @@ RunData
 
 ```
 milestoneInterval = BaseMilestoneInterval (sabit, oda sayısı)
-nextMilestone = totalRoomsCleared + milestoneInterval
+isMilestone = totalRoomsCleared > 0 && totalRoomsCleared % milestoneInterval == 0
 ```
 
 | Değişken | Tanım | Varsayılan |
@@ -109,7 +109,9 @@ timeBonus = max(0, MaxTimeBonus - (runTimer × TimePenaltyPerSecond))
 | Değişken | Tanım | Varsayılan |
 |----------|-------|-----------|
 | `MaxTimeBonus` | Maksimum zaman bonusu | 5000 |
-| `TimePenaltyPerSecond` | Saniye başına bonus azalma | 5 |
+| `TimePenaltyPerSecond` | Saniye başına bonus azalma | 3.3 |
+
+**Not:** 5000 / 3.3 ≈ 1515 saniye ≈ 25.25 dakika. Hedef run ~20dk olduğundan, normal tempolu oyuncular ~1500 puan time bonus alır.
 
 ## Edge Cases
 

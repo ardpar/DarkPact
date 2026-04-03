@@ -54,12 +54,13 @@ Geçiş: Pooled → Playing (`Play()`) → Finishing (lifetime doldu veya `Stop(
 
 | Sistem | Yön | Arayüz |
 |--------|-----|--------|
-| **Combat System** | ← talep alır | `Play(HitSpark, hitPosition, ...)` — her hasar olayında |
+| **Combat System** | ← talep alır | `Play(HitSpark, hitPosition, ...)` — her hasar olayında. Combat ayrıca `RequestScreenShake(intensity, duration)` çağırır → VFX System parametreleri uygular → `CameraSystem.ShakeCamera()` çağırır |
 | **Player Controller** | ← talep alır | `Play(DashTrail, playerPosition, ...)` — dash sırasında |
 | **Pact System** | ← talep alır | `PlayLooping(PactAura, playerTransform)` — pakt aktifken sürekli |
 | **Status Effect System** | ← talep alır | `PlayLooping(PoisonVFX, targetTransform)` — status effect süresince |
 | **Enemy System** | ← talep alır | `Play(DeathVFX, enemyPosition, ...)` — düşman ölümünde |
 | **Room/Tilemap System** | ← talep alır | Environmental efektler oda yüklendiğinde başlar |
+| **Camera System** | → çağırır | `CameraSystem.ShakeCamera(intensity, duration)` — VFX System screen shake parametrelerini (ScreenShakeIntensity, ScreenShakeDuration) uygulayarak Camera System'a iletir. Çağrı zinciri: Combat System → VFX System → Camera System |
 | **Game Manager** | ← dinler | `OnGameStateChanged` → Paused'da tüm particle'lar pause edilir |
 
 ## Formulas

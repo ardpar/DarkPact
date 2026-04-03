@@ -111,6 +111,16 @@ roomDifficulty = baseDifficulty + (roomIndex / mainPathLength) × DifficultyRang
 ```
 Bu değer Run Manager'a iletilir → Enemy System'a aktarılır.
 
+| Değişken | Tanım | Varsayılan | Aralık |
+|----------|-------|-----------|--------|
+| `baseDifficulty` | Akt başlangıç zorluğu | Akt1=1.0, Akt2=2.0, Akt3=3.0 | 0.5–5.0 |
+| `DifficultyRange` | Akt içi zorluk artış aralığı | 1.0 | 0.5–3.0 |
+
+**Örnek (Akt 1):** baseDifficulty=1.0, DifficultyRange=1.0, mainPathLength=15
+- Room 0: 1.0 + (0/15) × 1.0 = 1.0
+- Room 7: 1.0 + (7/15) × 1.0 = 1.47
+- Room 14: 1.0 + (14/15) × 1.0 = 1.93
+
 ### Toplam Oda Sayısı (Tahmini)
 
 ```

@@ -71,6 +71,7 @@ CurrentHP <= 0 → OnDeath(source)
 
 ```
 elementalMultiplier = 1.0 + targetWeakness[damageType] - targetResistance[damageType]
+damageMultiplier = product(all active pact/buff damageMultipliers)  // Çarpımsal stacking
 rawReduced = baseDamage × damageMultiplier × elementalMultiplier
 finalDamage = max(1, floor(rawReduced - targetDefense))
 ```
@@ -131,6 +132,7 @@ HP iksiri iyileşmesi: `healAmount = MaxHP × HealPercent`
 | Sistem | Bağımlılık Tipi | Arayüz |
 |--------|----------------|--------|
 | Game Manager | Hard | `OnGameStateChanged` → timer-based tick'ler pause |
+| Pact System | Soft | `CanHeal()` kontrolü: iyileşme uygulanmadan önce Pact System'ın `IsHealingRestricted()` sorgulanır. Kan Kalkanı aktifse heal ve HoT (Regen) engellenir. |
 
 **Downstream:**
 

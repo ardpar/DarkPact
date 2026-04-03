@@ -151,7 +151,7 @@ respawnDelay = 2.0s (sabit animasyon süresi)
 | Durum | Ne olur |
 |-------|---------|
 | **Oda spawn bütçesi tek düşman bile almıyorsa** | Minimum 1 düşman spawn edilir (en düşük weight'li) |
-| **Katliam Paktı + dirilen düşman tekrar ölürse** | İkinci ölüm finaldir — düşmanlar sadece 1 kez dirilir |
+| **Katliam Paktı + dirilen düşman tekrar ölürse** | İkinci ölüm finaldir — düşmanlar sadece 1 kez dirilir. **Dirilen düşmanın ikinci ölümünde XP ve loot verilmez** — `OnEnemyDied` event'inde `isRespawnedKill` flag'i true olur, Run Manager ve Loot System bu flag'i kontrol eder. |
 | **Oyuncu odadan çıkıp geri gelirse** | Active düşmanlar yerinde kalır. Dead düşmanlar geri gelmez (cleared değilse) |
 | **Tüm düşmanlar spawn anında AoE ile ölürse** | OnRoomCleared anında tetiklenir. Loot hepsi aynı anda düşer. |
 | **Elite düşman kapı yanında spawn ederse** | Spawn point'ler kapılardan minimum 3 tile uzak olmalı (şablon kuralı) |

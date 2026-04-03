@@ -26,7 +26,8 @@ Oyuncu yere düşen bir item gördüğünde "bu ne, güçlü mü?" merak eder. I
    - `SpellGem` — Skill slotlarına takılan büyü taşları (ateş, buz, zehir, şimşek, karanlık)
 3. **Rarity sistemi**: 5 kademe, her kademe stat çarpanı uygular
 4. **Pakt affinity**: Altın rarity item'lar belirli bir pakta bağlı bonus taşır
-5. **Item ID**: Her item benzersiz string ID (ör: `weapon_sword_iron`, `armor_leather_basic`)
+5. **Seed-based randomization**: Bonus stat roll'ları Run Manager'dan alınan alt-seed (`RunSeedProvider.GetSubSeed("loot")`) ile yapılır. Aynı run seed = aynı item stat'ları.
+6. **Item ID**: Her item benzersiz string ID (ör: `weapon_sword_iron`, `armor_leather_basic`)
 6. **Tag sistemi**: Item'lar tag'lerle etiketlenir (ör: `melee`, `fire`, `heavy`) — Loot System filtreleme için kullanır
 
 ### Item Rarity

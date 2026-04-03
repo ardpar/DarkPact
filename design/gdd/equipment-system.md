@@ -110,8 +110,10 @@ if (item.rarity == Legendary AND item.pactAffinity == activePact):
 
 | Knob | Tip | Varsayılan | Güvenli Aralık | Etki |
 |------|-----|-----------|----------------|------|
-| `StartingWeapon[class]` | ItemDefinition | Sınıfa göre | — | Başlangıç silahı. |
-| `StartingArmor[class]` | ItemDefinition | Sınıfa göre | — | Başlangıç zırhı. |
+| `StartingWeapon[DeathKnight]` | ItemDefinition | Iron Sword: damage=12, attackSpeed=3.3, range=1.5, type=Kılıç, rarity=Common | — | Ölüm Şövalyesi başlangıç silahı. |
+| `StartingWeapon[Witch]` | ItemDefinition | Apprentice Staff: damage=8, attackSpeed=1.67, range=5.0, type=Asa, rarity=Common | — | Cadı başlangıç silahı. |
+| `StartingArmor[DeathKnight]` | ItemDefinition | Iron Chainmail: defense=5, maxHPBonus=10, moveSpeedModifier=0.9, rarity=Common | — | Ölüm Şövalyesi başlangıç zırhı. |
+| `StartingArmor[Witch]` | ItemDefinition | Cloth Robe: defense=2, maxHPBonus=0, moveSpeedModifier=1.0, rarity=Common | — | Cadı başlangıç zırhı. |
 | `LegendaryPactBonusMultiplier` | float | 1.3 | 1.1–2.0 | Pakt uyumu çarpanı. |
 
 ## Visual/Audio Requirements

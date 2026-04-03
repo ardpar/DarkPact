@@ -53,7 +53,7 @@ Oyuncu her kapıdan geçtiğinde yeni bir odaya adım atar ve anında "burası f
 | **Procedural Dungeon Generator** | ← veri alır | Oda şablonu, pozisyon, kapı bağlantıları, akt tileset bilgisi |
 | **Camera System** | → bildirir | Aktif oda sınırları (`Bounds`) — kamera bu sınırlar içinde kalır |
 | **Enemy System** | → sağlar | Spawn point pozisyonları, oda temizlenme event'i (`OnRoomCleared`) |
-| **Player Controller** | ← dinler | Oyuncu kapıdan geçtiğinde `OnPlayerEnteredRoom(Room)` event'i |
+| **Player Controller** | → bildirir | Oyuncu kapı trigger'ına girdiğinde Room/Tilemap `OnPlayerEnteredRoom(Room)` event'i fırlatır, Player Controller ve Camera System dinler |
 | **Combat System** | → bildirir | Oda duvarları fiziksel engel olarak combat'ı etkiler (projectile duvardan geçmez) |
 
 ## Formulas

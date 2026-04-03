@@ -53,7 +53,7 @@ Oyuncu kendini çevik, tepkisel ve güçlü hisseder. Her input anında karşıl
 | **Equipment System** | ← veri alır | Mevcut silah → saldırı animasyonu, hız, menzil. Zırh → hareket hızı modifier |
 | **Pact System** | ← modifier alır | Aktif paktlar stat'ları modifier (Gölge Adımı → sınırsız dash vb.) |
 | **VFX System** | → talep eder | Dash trail, hit feedback efektleri |
-| **Room/Tilemap System** | ← dinler | `OnPlayerEnteredRoom` event'i fırlatır kapı geçişinde |
+| **Room/Tilemap System** | ← dinler | Room/Tilemap `OnPlayerEnteredRoom(Room)` event'ini fırlatır, Player Controller dinler (kapı trigger'ı Room/Tilemap'e aittir) |
 | **Class System** | ← veri alır | Başlangıç stat'ları, animasyon seti, silah tipi |
 
 ## Formulas
@@ -61,7 +61,8 @@ Oyuncu kendini çevik, tepkisel ve güçlü hisseder. Her input anında karşıl
 ### Hareket
 
 ```
-actualMoveSpeed = baseMoveSpeed × equipmentModifier × pactModifier × statusEffectModifier
+stateModifier = isAttacking ? AttackMoveSpeedMultiplier : 1.0
+actualMoveSpeed = baseMoveSpeed × equipmentModifier × pactModifier × statusEffectModifier × stateModifier
 velocity = inputDirection.normalized × actualMoveSpeed
 ```
 

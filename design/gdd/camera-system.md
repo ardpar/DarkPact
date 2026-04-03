@@ -40,7 +40,7 @@ Oyuncu kamerayı fark etmez — sadece aksiyon netçe görünür. Oda sınırlar
 | **Game Manager** | ← dinler | `OnGameStateChanged` → Disabled/Following geçişi |
 | **Room/Tilemap System** | ← veri alır | `GetActiveRoomBounds()` → kamera clamp sınırları |
 | **Player Controller** | ← takip eder | `PlayerTransform.position` → kamera hedef pozisyonu |
-| **VFX System** | ← talep alır | `ShakeCamera(intensity, duration)` → screen shake tetikler |
+| **VFX System** | ← talep alır | `ShakeCamera(intensity, duration)` — VFX System çağırır (çağrı zinciri: Combat → VFX → Camera). Shake parametreleri (intensity, duration) VFX System'ın Tuning Knob'larında tanımlıdır, Camera System sadece uygular. |
 | **Input System** | ← veri alır | Mouse pozisyonu → look-ahead yönü hesaplaması (aim yönüne doğru offset) |
 
 ## Formulas

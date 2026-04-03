@@ -158,7 +158,7 @@ fleeTarget = enemyPos + fleeDirection × FleeDistance
 | **Birden fazla düşman aynı pozisyona koşarsa** | Separation force birbirlerini iter. Tam overlap → rastgele yöne küçük offset. |
 | **Oyuncu dash ile düşmanın arkasına geçerse** | AI bir sonraki tick'te (0.1s) yeni pozisyonu algılar ve yön değiştirir. |
 | **Ranged düşman köşeye sıkışırsa (flee edemez)** | Flee hedefi geçersizse melee davranışına geçer (zorunlu yakın saldırı). |
-| **Tüm düşmanlar aynı anda saldırırsa** | Stagger mekanizması: Aynı anda max 2-3 düşman saldırabilir (AttackToken sistemi). Diğerleri bekleme pozisyonunda kalır. |
+| **Tüm düşmanlar aynı anda saldırırsa** | **AttackToken sistemi**: Global token havuzu = `MaxConcurrentAttackers` (default 3). Düşman saldırmak istediğinde `RequestAttackToken()` çağırır → token varsa alır ve saldırır, yoksa `CircleWait` davranışına geçer (oyuncunun etrafında pozisyon alır, token açılana kadar bekler). Token saldırı bitince (recovery frame sonrası) `ReleaseAttackToken()` ile iade edilir. Token sırası FIFO — ilk talep eden önce alır. |
 | **Oyuncu invulnerable iken (dash)** | AI farkında değil — saldırmaya devam eder. Bu adil: düşman oyuncunun dash timing'ini bilmemeli. |
 | **Elite özel yetenek cooldown'u sıfırken** | Normal melee saldırı yapar. Özel yetenek hazır olunca öncelikli kullanır. |
 

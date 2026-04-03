@@ -22,7 +22,7 @@ Input System oyuncunun bilinçli olarak fark ettiği bir sistem değildir. Doğr
    - `Gameplay` — Hareket, saldırı, dash, skill'ler (Playing state'inde aktif)
    - `UI` — Menü navigasyonu, buton tıklamaları (her zaman aktif)
    - `Global` — Pause toggle (her zaman aktif, Loading hariç)
-3. **Input Buffer** — Son 0.1s içindeki input'lar buffer'lanır. Dash veya skill tuşuna animasyon sırasında basılırsa, animasyon bitince tetiklenir (hack-and-slash responsiveness için kritik)
+3. **Input Buffer** — Son 0.1s içindeki input'lar zaman damgasıyla buffer'lanır. Input System sadece buffer'ı tutar ve `GetBufferedAction()` API'si ile son buffer'lı aksiyonu sunar. Buffer'dan ne zaman consume edileceğine karar vermek **Player Controller'ın sorumluluğundadır** — animasyon state'ine göre buffer'ı okur ve uygun anda tetikler (Input System animasyon durumunu bilmez)
 4. **Mouse aim** — Mouse pozisyonu sürekli takip edilir, world-space'e çevrilir. Saldırı yönü mouse pozisyonuna göredir
 
 ### Action Tanımları

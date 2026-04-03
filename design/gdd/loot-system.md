@@ -24,6 +24,8 @@ Her düşman öldürmek "ne düşecek?" merakı yaratır. Mor veya altın rarity
 5. **Altın drop**: Her düşman sabit + random altın düşürür
 6. **Difficulty scaling**: Yüksek difficulty → daha yüksek rarity şansı
 7. **Ground loot**: Item dünyaya fiziksel obje olarak düşer, oyuncu Interact ile alır
+8. **Boss loot**: Boss ölümünde guaranteed Epic+ item + gold pile (100-200 altın). Boss loot tablosu ayrı tanımlıdır.
+9. **Pity timer**: Son 15 item drop'unda Rare+ düşmediyse bir sonraki drop garantili Rare. Son 30 drop'ta Epic+ düşmediyse garantili Epic. Bu sayaç run boyunca tutulur.
 
 ### LootTable ScriptableObject
 
@@ -89,13 +91,13 @@ adjustedWeight[Epic] *= difficultyBonus²
 adjustedWeight[Legendary] *= difficultyBonus³
 ```
 
-| Rarity | Base Weight | Diff=1.0 | Diff=2.0 (example) |
-|--------|------------|----------|-------------------|
-| Common | 50 | 50 | 50 |
-| Uncommon | 25 | 25 | 27.5 |
-| Rare | 15 | 15 | 18.2 |
-| Epic | 8 | 8 | 10.6 |
-| Legendary | 2 | 2 | 2.9 |
+| Rarity | Base Weight | Diff=1.0 | Diff=2.0 (bonus=1.1) |
+|--------|------------|----------|----------------------|
+| Common | 50 | 50 | 50 (değişmez) |
+| Uncommon | 25 | 25 | 27.5 (×1.1) |
+| Rare | 15 | 15 | 16.5 (×1.1) |
+| Epic | 8 | 8 | 9.68 (×1.1²=1.21) |
+| Legendary | 2 | 2 | 2.66 (×1.1³=1.331) |
 
 | Değişken | Tanım | Varsayılan |
 |----------|-------|-----------|

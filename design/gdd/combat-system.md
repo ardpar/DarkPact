@@ -24,6 +24,7 @@ Oyuncu bir ölüm makinesi gibi hisseder — düşman gruplarına dalıp biçer.
 5. **Combo**: MVP'de yok — tek saldırı. Attack state'indeki input buffer altyapısı combo için hazır (VS'de)
 6. **Knockback**: Hasar veren saldırılar hedefi geri iter. Knockback gücü silah ve rarity'ye göre değişir
 7. **I-frames**: Sadece Dash sırasında invincible. Normal combat'ta yok — pozisyonlama ve dash timing önemli
+8. **Critical Hit**: Her saldırıda `CritChance` olasılıkla critical hit olur. Critical hit hasarı `baseDamage × CritMultiplier`. Crit olduğunda büyük damage number + özel VFX + SFX tetiklenir. Default: %10 şans, ×2 hasar.
 
 ### Silah Tipleri
 
@@ -97,6 +98,19 @@ totalDamage = weaponDamage × pactDamageMultiplier × skillMultiplier
 | `weaponDamage` | Silah base + rarity | silaha bağlı | 5–200 |
 | `pactDamageMultiplier` | Pakt bonus (ör: Katliam +%60) | 1.0 | 0.5–3.0 |
 | `skillMultiplier` | Skill hasar çarpanı | skill'e bağlı | 0.5–5.0 |
+
+### Critical Hit
+
+```
+isCritical = random(0, 1) < CritChance
+critMultiplier = isCritical ? CritMultiplier : 1.0
+totalDamage = weaponDamage × pactDamageMultiplier × skillMultiplier × critMultiplier
+```
+
+| Değişken | Tanım | Varsayılan | Aralık |
+|----------|-------|-----------|--------|
+| `CritChance` | Critical hit olasılığı | 0.10 | 0.0–0.5 |
+| `CritMultiplier` | Critical hasar çarpanı | 2.0 | 1.5–4.0 |
 
 ### Saldırı Hızı
 
