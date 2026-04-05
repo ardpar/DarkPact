@@ -508,7 +508,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1052,12 +1052,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a883995c929b34ad9b72d63ceb4e6478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkPact.Core.DungeonGenerator
+  _fixedLayout: {fileID: 0}
   _mainPathLength: 6
   _branchChance: 0.25
   _maxBranchLength: 2
   _maxTotalRooms: 12
   _treasureRoomChance: 0.6
-  _roomSpacing: 30
   _baseDifficulty: 1
   _difficultyRange: 1
 --- !u!4 &684457077
@@ -1436,7 +1436,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1542,15 +1542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4aa4b7dc8f4146b8b6ed0ff83bc28af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkPact.Core.DungeonManager
-  _roomWidth: 22
-  _roomHeight: 16
-  _doorWidth: 4
-  _floorTile: {fileID: 11400000, guid: cfcf88587d8bc7f44ad0d2c2480af312, type: 2}
-  _wallTile: {fileID: 11400000, guid: f2f4fb75a6126034fb450b11c7a63a85, type: 2}
-  _doorTile: {fileID: 0}
-  _groundTilemap: {fileID: 825371382}
-  _wallsTilemap: {fileID: 537269854}
-  _playerTransform: {fileID: 0}
+  _fallbackRoomPrefab: {fileID: 4380845685297632725, guid: efe426e1a27b34ac6ab59270ad8c9ebe, type: 3}
   _bossPrefab: {fileID: 1759116602477878093, guid: 61e30aabce1404edabe53a2ae25a7804, type: 3}
 --- !u!4 &955232719
 Transform:
@@ -1796,7 +1788,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2074,7 +2066,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1551636173
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2495,7 +2487,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkPact.Core.AStarPathfinder
   _wallsTilemap: {fileID: 537269854}
-  _recalcInterval: 0.3
   _maxPathLength: 50
 --- !u!4 &2069200875
 Transform:

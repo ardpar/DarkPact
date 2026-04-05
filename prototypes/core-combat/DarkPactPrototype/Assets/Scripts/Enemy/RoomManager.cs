@@ -28,7 +28,7 @@ namespace DarkPact.Core
 
         public void SpawnEnemiesForRoom(Vector2 roomCenter, float difficulty)
         {
-            ClearEnemies();
+            ClearAllEnemies();
             _isCleared = false;
 
             if (_enemyPrefab == null) return;
@@ -58,7 +58,34 @@ namespace DarkPact.Core
             }
         }
 
-        void ClearEnemies()
+        public void SpawnEnemiesAtPoints(Transform[] spawnPoints, float difficulty)
+        {
+            ClearAllEnemies();
+            _isCleared = false;
+
+            if (_enemyPrefab == null || spawnPoints == null) return;
+
+            int count = Mathf.RoundToInt(_baseEnemyCount * difficulty);
+            count = Mathf.Clamp(count, 2, spawnPoints.Length);
+
+            for (int i = 0; i < count; i++)
+            {
+                var sp = spawnPoints[i % spawnPoints.Length];
+                var enemyObj = Instantiate(_enemyPrefab, sp.position, Quaternion.identity);
+                var enemy = enemyObj.GetComponent<EnemyAI>();
+
+                if (enemy != null)
+                {
+                    if (ServiceLocator.TryGet<PactManager>(out var pact) && pact.IsKatliamActive)
+                        enemy.CanRespawn = true;
+
+                    enemy.OnEnemyDied += HandleEnemyDied;
+                    _activeEnemies.Add(enemy);
+                }
+            }
+        }
+
+        public void ClearAllEnemies()
         {
             foreach (var enemy in _activeEnemies)
             {

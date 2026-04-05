@@ -7,7 +7,6 @@ namespace DarkPact.Core
     public class AStarPathfinder : MonoBehaviour
     {
         [SerializeField] Tilemap _wallsTilemap;
-        [SerializeField] float _recalcInterval = 0.3f;
         [SerializeField] int _maxPathLength = 50;
 
         static AStarPathfinder _instance;

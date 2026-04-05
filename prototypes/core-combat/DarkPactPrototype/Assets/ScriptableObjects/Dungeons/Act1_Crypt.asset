@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604c8e10cb26a42418df33e2f23c335d, type: 3}
+  m_Name: Act1_Crypt
+  m_EditorClassIdentifier: Assembly-CSharp::DarkPact.Core.DungeonLayoutSO
+  LayoutName: "Act 1 \u2014 Crypt"
+  Act: 1
+  Rooms:
+  - Name: "Giri\u015F"
+    Type: 0
+    EditorPosition: {x: 300, y: 300}
+    Difficulty: 0
+    RoomPrefab: {fileID: 5146587327939107655, guid: 7fe17b15a70b04038986d5a400534e80, type: 3}
+    Notes: 
+  - Name: "Mezar Odas\u0131"
+    Type: 1
+    EditorPosition: {x: 300, y: 210}
+    Difficulty: 1
+    RoomPrefab: {fileID: 4380845685297632725, guid: efe426e1a27b34ac6ab59270ad8c9ebe, type: 3}
+    Notes: 
+  - Name: Koridor
+    Type: 1
+    EditorPosition: {x: 300, y: 120}
+    Difficulty: 1.2
+    RoomPrefab: {fileID: 4380845685297632725, guid: efe426e1a27b34ac6ab59270ad8c9ebe, type: 3}
+    Notes: 
+  - Name: "Hazine Odas\u0131"
+    Type: 2
+    EditorPosition: {x: 420, y: 120}
+    Difficulty: 0.5
+    RoomPrefab: {fileID: 4607680896434013269, guid: b640dfd6c8c8644f08008efd7ece1b05, type: 3}
+    Notes: "Branch \u2014 iyi loot"
+  - Name: "\u0130skelet \xC7ukuru"
+    Type: 1
+    EditorPosition: {x: 180, y: 120}
+    Difficulty: 1.4
+    RoomPrefab: {fileID: 4380845685297632725, guid: efe426e1a27b34ac6ab59270ad8c9ebe, type: 3}
+    Notes: 
+  - Name: "Karanl\u0131k Salon"
+    Type: 1
+    EditorPosition: {x: 180, y: 30}
+    Difficulty: 1.7
+    RoomPrefab: {fileID: 4380845685297632725, guid: efe426e1a27b34ac6ab59270ad8c9ebe, type: 3}
+    Notes: 
+  - Name: Minotaur Arena
+    Type: 3
+    EditorPosition: {x: 300, y: 30}
+    Difficulty: 2
+    RoomPrefab: {fileID: 4743694693871633414, guid: d69c12a48e0f94a129a5dbc7bb353053, type: 3}
+    Notes: 
+  Connections:
+  - FromIndex: 0
+    ToIndex: 1
+  - FromIndex: 1
+    ToIndex: 2
+  - FromIndex: 2
+    ToIndex: 3
+  - FromIndex: 2
+    ToIndex: 4
+  - FromIndex: 4
+    ToIndex: 5
+  - FromIndex: 5
+    ToIndex: 6
+  - FromIndex: 6
+    ToIndex: 5
+  StartRoomIndex: 0
+  BossRoomIndex: 6

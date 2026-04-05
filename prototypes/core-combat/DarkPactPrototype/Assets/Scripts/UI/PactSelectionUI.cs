@@ -23,10 +23,16 @@ namespace DarkPact.Core
 
         readonly List<GameObject> _spawnedCards = new();
 
-        void Start()
+        bool _subscribed;
+
+        void OnEnable()
         {
+            if (!_subscribed)
+            {
+                RunManager.OnRunStateChanged += OnRunStateChanged;
+                _subscribed = true;
+            }
             if (_overlay) _overlay.SetActive(false);
-            RunManager.OnRunStateChanged += OnRunStateChanged;
         }
 
         void OnDestroy()

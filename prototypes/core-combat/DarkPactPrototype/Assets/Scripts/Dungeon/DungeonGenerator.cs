@@ -40,21 +40,22 @@ namespace DarkPact.Core
 
     public class DungeonGenerator : MonoBehaviour
     {
-        [Header("Generation")]
+        [Header("Layout Source")]
+        [SerializeField] DungeonLayoutSO _fixedLayout;
+
+        [Header("Procedural Generation")]
         [SerializeField] int _mainPathLength = 6;
         [SerializeField] float _branchChance = 0.25f;
         [SerializeField] int _maxBranchLength = 2;
         [SerializeField] int _maxTotalRooms = 12;
         [SerializeField] float _treasureRoomChance = 0.6f;
 
-        [Header("Layout")]
-        [SerializeField] float _roomSpacing = 30f;
-
         [Header("Difficulty")]
         [SerializeField] float _baseDifficulty = 1f;
         [SerializeField] float _difficultyRange = 1f;
 
         public DungeonLayout CurrentLayout { get; private set; }
+        public DungeonLayoutSO FixedLayout => _fixedLayout;
 
         static readonly Direction[] AllDirs = { Direction.North, Direction.East, Direction.South, Direction.West };
 
@@ -65,6 +66,13 @@ namespace DarkPact.Core
 
         public DungeonLayout Generate(int seed)
         {
+            // Use fixed layout if assigned
+            if (_fixedLayout != null)
+            {
+                CurrentLayout = _fixedLayout.ToDungeonLayout();
+                return CurrentLayout;
+            }
+
             var rng = new System.Random(seed);
             var layout = new DungeonLayout { Seed = seed };
             var occupied = new HashSet<Vector2Int>();

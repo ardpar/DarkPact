@@ -11,8 +11,8 @@ namespace DarkPact.Core
         {
             GameManager.OnGameStateChanged += OnGameStateChanged;
 
-            // Auto-start run when Gameplay scene loads
-            if (ServiceLocator.TryGet<RunManager>(out var run))
+            // Auto-start run when Gameplay scene loads (only if not already in a run)
+            if (ServiceLocator.TryGet<RunManager>(out var run) && run.CurrentRunState == RunState.Inactive)
                 run.StartNewRun();
         }
 

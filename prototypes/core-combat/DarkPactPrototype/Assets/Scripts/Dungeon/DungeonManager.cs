@@ -1,31 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace DarkPact.Core
 {
     public class DungeonManager : MonoBehaviour
     {
-        [Header("Room Dimensions (tiles)")]
-        [SerializeField] int _roomWidth = 22;
-        [SerializeField] int _roomHeight = 16;
-        [SerializeField] int _doorWidth = 4;
-
-        [Header("Tiles")]
-        [SerializeField] TileBase _floorTile;
-        [SerializeField] TileBase _wallTile;
-
-        [Header("References")]
-        [SerializeField] Tilemap _groundTilemap;
-        [SerializeField] Tilemap _wallsTilemap;
-
-        [Header("Prefabs")]
+        [Header("Fallback (no prefab rooms)")]
+        [SerializeField] GameObject _fallbackRoomPrefab;
         [SerializeField] GameObject _bossPrefab;
 
         DungeonLayout _layout;
+        DungeonLayoutSO _layoutSO;
         int _currentRoomIndex = -1;
-        readonly List<GameObject> _doorTriggers = new();
-        readonly List<GameObject> _spawnedEnemies = new();
+        GameObject _activeRoomInstance;
+        RoomPrefabData _activeRoomData;
+        readonly List<GameObject> _activeDoors = new();
 
         public RoomData CurrentRoom => _layout != null && _currentRoomIndex >= 0
             ? _layout.Rooms[_currentRoomIndex] : null;
@@ -37,122 +26,175 @@ namespace DarkPact.Core
             ServiceLocator.Register(this);
         }
 
-        // === BUILD ===
-
-        public void BuildDungeon(DungeonLayout layout)
+        public void BuildDungeon(DungeonLayout layout, DungeonLayoutSO layoutSO = null)
         {
             _layout = layout;
-            ClearDungeon();
-
-            // Draw the current room only (node-based: one room at a time)
+            _layoutSO = layoutSO;
             EnterRoom(layout.StartRoomIndex);
         }
 
-        void ClearDungeon()
+        // === ROOM LIFECYCLE ===
+
+        void EnterRoom(int roomIndex)
         {
-            _groundTilemap.ClearAllTiles();
-            _wallsTilemap.ClearAllTiles();
-            ClearDoors();
-            ClearSpawnedEnemies();
-        }
+            if (roomIndex < 0 || roomIndex >= _layout.Rooms.Count) return;
 
-        // === ROOM RENDERING ===
+            // Cleanup previous room
+            UnloadCurrentRoom();
 
-        void DrawCurrentRoom(RoomData room)
-        {
-            _groundTilemap.ClearAllTiles();
-            _wallsTilemap.ClearAllTiles();
+            _currentRoomIndex = roomIndex;
+            var room = _layout.Rooms[roomIndex];
 
-            // Room is always drawn at world origin (0,0) centered
-            int halfW = _roomWidth / 2;
-            int halfH = _roomHeight / 2;
-
-            for (int x = 0; x < _roomWidth; x++)
+            // Load room prefab
+            GameObject prefab = GetRoomPrefab(roomIndex);
+            if (prefab != null)
             {
-                for (int y = 0; y < _roomHeight; y++)
-                {
-                    var tilePos = new Vector3Int(x - halfW, y - halfH, 0);
-                    bool isEdge = x == 0 || x == _roomWidth - 1 || y == 0 || y == _roomHeight - 1;
-
-                    if (isEdge)
-                    {
-                        if (IsDoorPosition(room, x, y))
-                            _groundTilemap.SetTile(tilePos, _floorTile);
-                        else
-                            _wallsTilemap.SetTile(tilePos, _wallTile);
-                    }
-                    else
-                    {
-                        _groundTilemap.SetTile(tilePos, _floorTile);
-                    }
-                }
+                _activeRoomInstance = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+                _activeRoomData = _activeRoomInstance.GetComponent<RoomPrefabData>();
             }
 
-            // Refresh composite collider
-            var composite = _wallsTilemap.GetComponent<CompositeCollider2D>();
-            if (composite != null) composite.GenerateGeometry();
+            // Place player
+            PlacePlayer(room);
+
+            // Setup camera bounds
+            SetupCameraBounds();
+
+            // Spawn door triggers
+            SpawnDoorTriggers(room, roomIndex);
+
+            // Notify RunManager
+            if (ServiceLocator.TryGet<RunManager>(out var run))
+                run.OnRoomEntered(roomIndex, room.Type);
+
+            // Spawn room content
+            if (!room.IsCleared)
+                SpawnRoomContent(room);
+
+            Debug.Log($"[Dungeon] Entered: {GetRoomName(roomIndex)} ({room.Type}, diff {room.Difficulty:F1})");
         }
 
-        bool IsDoorPosition(RoomData room, int localX, int localY)
+        void UnloadCurrentRoom()
         {
-            int halfDoor = _doorWidth / 2;
-            int cx = _roomWidth / 2;
-            int cy = _roomHeight / 2;
+            // Destroy room instance
+            if (_activeRoomInstance != null)
+            {
+                Destroy(_activeRoomInstance);
+                _activeRoomInstance = null;
+                _activeRoomData = null;
+            }
 
-            if (room.Doors.Contains(Direction.North) && localY == _roomHeight - 1)
-                if (localX >= cx - halfDoor && localX < cx + halfDoor) return true;
+            // Destroy door triggers
+            foreach (var d in _activeDoors)
+                if (d != null) Destroy(d);
+            _activeDoors.Clear();
 
-            if (room.Doors.Contains(Direction.South) && localY == 0)
-                if (localX >= cx - halfDoor && localX < cx + halfDoor) return true;
+            // Clear spawned enemies
+            if (ServiceLocator.TryGet<RoomManager>(out var rm))
+                rm.ClearAllEnemies();
+        }
 
-            if (room.Doors.Contains(Direction.East) && localX == _roomWidth - 1)
-                if (localY >= cy - halfDoor && localY < cy + halfDoor) return true;
+        // === TRANSITION ===
 
-            if (room.Doors.Contains(Direction.West) && localX == 0)
-                if (localY >= cy - halfDoor && localY < cy + halfDoor) return true;
+        public void TransitionToRoom(int targetRoomIndex, Direction fromDirection)
+        {
+            EnterRoom(targetRoomIndex);
 
-            return false;
+            // Override player position to opposite door
+            if (_activeRoomData != null)
+            {
+                var oppositeDir = DungeonGenerator.Opposite(fromDirection);
+                var doorTransform = _activeRoomData.GetDoor(oppositeDir);
+                if (doorTransform != null && ServiceLocator.TryGet<PlayerController>(out var player))
+                {
+                    // Offset inward from door
+                    Vector2 inward = DirToVector(oppositeDir) * -2f;
+                    player.transform.position = (Vector2)doorTransform.position + inward;
+                }
+            }
+        }
+
+        // === PREFAB LOOKUP ===
+
+        GameObject GetRoomPrefab(int roomIndex)
+        {
+            // Check SO for room-specific prefab
+            if (_layoutSO != null && roomIndex < _layoutSO.Rooms.Count)
+            {
+                var nodePrefab = _layoutSO.Rooms[roomIndex].RoomPrefab;
+                if (nodePrefab != null) return nodePrefab;
+            }
+
+            return _fallbackRoomPrefab;
+        }
+
+        string GetRoomName(int roomIndex)
+        {
+            if (_layoutSO != null && roomIndex < _layoutSO.Rooms.Count)
+                return _layoutSO.Rooms[roomIndex].Name;
+            return $"Room {roomIndex}";
+        }
+
+        // === PLAYER PLACEMENT ===
+
+        void PlacePlayer(RoomData room)
+        {
+            if (!ServiceLocator.TryGet<PlayerController>(out var player)) return;
+
+            if (_activeRoomData != null && _activeRoomData.PlayerSpawnPoint != null)
+            {
+                player.transform.position = _activeRoomData.PlayerSpawnPoint.position;
+            }
+            else
+            {
+                player.transform.position = Vector3.zero;
+            }
+        }
+
+        // === CAMERA ===
+
+        void SetupCameraBounds()
+        {
+            if (!ServiceLocator.TryGet<CameraController>(out var cam)) return;
+
+            if (_activeRoomData != null)
+            {
+                var bounds = _activeRoomData.GetBounds();
+                cam.SetRoomBounds(bounds.min, bounds.max);
+            }
+            else
+            {
+                cam.ClearBounds();
+            }
         }
 
         // === DOOR TRIGGERS ===
 
         void SpawnDoorTriggers(RoomData room, int roomIndex)
         {
-            ClearDoors();
-
-            int halfW = _roomWidth / 2;
-            int halfH = _roomHeight / 2;
-
             foreach (var door in room.Doors)
             {
                 // Find connected room
-                int connectedIndex = -1;
-                foreach (var (from, to, dir) in _layout.Connections)
-                {
-                    if (from == roomIndex && dir == door) { connectedIndex = to; break; }
-                    if (to == roomIndex && DungeonGenerator.Opposite(dir) == door) { connectedIndex = from; break; }
-                }
+                int connectedIndex = FindConnectedRoom(roomIndex, door);
                 if (connectedIndex < 0) continue;
 
-                // Position trigger at door opening
-                Vector2 triggerPos = door switch
+                // Get door position from prefab or calculate
+                Vector2 triggerPos;
+                if (_activeRoomData != null && _activeRoomData.HasDoor(door))
                 {
-                    Direction.North => new Vector2(0, halfH - 0.5f),
-                    Direction.South => new Vector2(0, -halfH + 0.5f),
-                    Direction.East => new Vector2(halfW - 0.5f, 0),
-                    Direction.West => new Vector2(-halfW + 0.5f, 0),
-                    _ => Vector2.zero
-                };
+                    triggerPos = _activeRoomData.GetDoor(door).position;
+                }
+                else
+                {
+                    // Fallback: estimate door position
+                    triggerPos = DirToVector(door) * 10f;
+                }
 
-                Vector2 triggerSize = (door == Direction.North || door == Direction.South)
-                    ? new Vector2(_doorWidth, 2)
-                    : new Vector2(2, _doorWidth);
-
-                var doorObj = new GameObject($"Door_{door}_{connectedIndex}");
+                var doorObj = new GameObject($"Door_{door}_to_{connectedIndex}");
                 doorObj.transform.position = triggerPos;
 
                 var col = doorObj.AddComponent<BoxCollider2D>();
-                col.size = triggerSize;
+                col.size = (door == Direction.North || door == Direction.South)
+                    ? new Vector2(3, 2) : new Vector2(2, 3);
                 col.isTrigger = true;
 
                 var rb = doorObj.AddComponent<Rigidbody2D>();
@@ -163,87 +205,62 @@ namespace DarkPact.Core
                 trigger.ToRoomIndex = connectedIndex;
                 trigger.DoorDirection = door;
 
-                _doorTriggers.Add(doorObj);
+                _activeDoors.Add(doorObj);
             }
         }
 
-        void ClearDoors()
+        int FindConnectedRoom(int roomIndex, Direction door)
         {
-            foreach (var d in _doorTriggers)
-                if (d != null) Destroy(d);
-            _doorTriggers.Clear();
+            foreach (var (from, to, dir) in _layout.Connections)
+            {
+                if (from == roomIndex && dir == door) return to;
+                if (to == roomIndex && DungeonGenerator.Opposite(dir) == door) return from;
+            }
+            return -1;
         }
 
-        // === ROOM TRANSITION ===
+        // === ROOM CONTENT ===
 
-        public void TransitionToRoom(int targetRoomIndex, Direction fromDirection)
+        void SpawnRoomContent(RoomData room)
         {
-            ClearSpawnedEnemies();
-            EnterRoom(targetRoomIndex);
-
-            // Place player at opposite door
-            var oppositeDir = DungeonGenerator.Opposite(fromDirection);
-            int halfW = _roomWidth / 2;
-            int halfH = _roomHeight / 2;
-
-            Vector2 spawnPos = oppositeDir switch
+            switch (room.Type)
             {
-                Direction.North => new Vector2(0, halfH - 3),
-                Direction.South => new Vector2(0, -halfH + 3),
-                Direction.East => new Vector2(halfW - 3, 0),
-                Direction.West => new Vector2(-halfW + 3, 0),
-                _ => Vector2.zero
-            };
-
-            if (ServiceLocator.TryGet<PlayerController>(out var player))
-                player.transform.position = spawnPos;
+                case RoomType.Combat:
+                    SpawnEnemies(room);
+                    break;
+                case RoomType.Boss:
+                    SpawnBoss();
+                    break;
+                case RoomType.Treasure:
+                    room.IsCleared = true; // auto-clear treasure rooms
+                    break;
+            }
         }
 
-        void EnterRoom(int roomIndex)
+        void SpawnEnemies(RoomData room)
         {
-            if (roomIndex < 0 || roomIndex >= _layout.Rooms.Count) return;
-            _currentRoomIndex = roomIndex;
-            var room = _layout.Rooms[roomIndex];
+            if (!ServiceLocator.TryGet<RoomManager>(out var rm)) return;
 
-            // Draw room tiles
-            DrawCurrentRoom(room);
-
-            // Spawn door triggers
-            SpawnDoorTriggers(room, roomIndex);
-
-            // Set camera bounds
-            if (ServiceLocator.TryGet<CameraController>(out var cam))
+            if (_activeRoomData != null && _activeRoomData.EnemySpawnPoints != null && _activeRoomData.EnemySpawnPoints.Length > 0)
             {
-                int halfW = _roomWidth / 2;
-                int halfH = _roomHeight / 2;
-                cam.SetRoomBounds(new Vector2(-halfW, -halfH), new Vector2(halfW, halfH));
+                // Use prefab spawn points
+                rm.SpawnEnemiesAtPoints(_activeRoomData.EnemySpawnPoints, room.Difficulty);
             }
-
-            // Notify RunManager
-            if (ServiceLocator.TryGet<RunManager>(out var run))
-                run.OnRoomEntered(roomIndex, room.Type);
-
-            // Spawn content based on room type
-            if (!room.IsCleared)
+            else
             {
-                switch (room.Type)
-                {
-                    case RoomType.Combat:
-                        if (ServiceLocator.TryGet<RoomManager>(out var roomMgr))
-                            roomMgr.SpawnEnemiesForRoom(Vector2.zero, room.Difficulty);
-                        break;
-                    case RoomType.Boss:
-                        if (_bossPrefab != null)
-                            _spawnedEnemies.Add(Instantiate(_bossPrefab, Vector2.zero, Quaternion.identity));
-                        break;
-                    case RoomType.Treasure:
-                        // TODO: spawn treasure chest
-                        room.IsCleared = true;
-                        break;
-                }
+                rm.SpawnEnemiesForRoom(Vector2.zero, room.Difficulty);
             }
+        }
 
-            Debug.Log($"[Dungeon] Entered room {roomIndex}: {room.Type} (difficulty {room.Difficulty:F1})");
+        void SpawnBoss()
+        {
+            if (_bossPrefab == null) return;
+
+            Vector3 spawnPos = Vector3.zero;
+            if (_activeRoomData != null && _activeRoomData.BossSpawnPoint != null)
+                spawnPos = _activeRoomData.BossSpawnPoint.position;
+
+            Instantiate(_bossPrefab, spawnPos, Quaternion.identity);
         }
 
         public void OnCurrentRoomCleared()
@@ -251,11 +268,13 @@ namespace DarkPact.Core
             if (CurrentRoom != null) CurrentRoom.IsCleared = true;
         }
 
-        void ClearSpawnedEnemies()
+        static Vector2 DirToVector(Direction dir) => dir switch
         {
-            foreach (var e in _spawnedEnemies)
-                if (e != null) Destroy(e);
-            _spawnedEnemies.Clear();
-        }
+            Direction.North => Vector2.up,
+            Direction.South => Vector2.down,
+            Direction.East => Vector2.right,
+            Direction.West => Vector2.left,
+            _ => Vector2.zero
+        };
     }
 }

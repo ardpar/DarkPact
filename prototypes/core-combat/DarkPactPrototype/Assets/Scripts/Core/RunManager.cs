@@ -83,9 +83,7 @@ namespace DarkPact.Core
             {
                 var layout = gen.Generate(GetSubSeed("dungeon"));
                 if (ServiceLocator.TryGet<DungeonManager>(out var dungeonMgr))
-                {
-                    dungeonMgr.BuildDungeon(layout);
-                }
+                    dungeonMgr.BuildDungeon(layout, gen.FixedLayout);
             }
 
             // Resume gameplay
